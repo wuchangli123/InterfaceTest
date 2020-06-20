@@ -1,0 +1,23 @@
+*** Settings ***
+Resource          ../../../ActionOperation/HZG/我的.txt
+Resource          ../../../PublicOperation/System.txt
+Resource          ../../../PublicOperation/Variable.txt
+Library           Collections
+Resource          ../../../DBOperation/B2C/Member/memno.txt
+
+*** Keywords ***
+member_memberDataUpdate_post
+    [Arguments]    ${tel}    ${pwd}    ${status1}
+    &{LoginJson}    登陆接口    ${tel}    ${pwd}
+    ${memberno}    Get From Dictionary    &{LoginJson}[data]    memberno
+    ${token}    Get From Dictionary    &{LoginJson}[data]    token
+    ${memberDataUpdateJson}    用户资料更改接口    ${memberno}    ${token}
+    ${status}    Get From Dictionary    ${memberDataUpdateJson}    status
+    Should Be Equal    ${status}    ${status1}
+    @{accountnumber}    查询会员编号    ${tel}
+    ${account}    Evaluate    @{accountnumber}[0][0]
+    ${date}    Get Time
+    ${birthdate}    Subtract Time From Date    ${date}    10000days    %Y-%m-%d
+    ${time}    Convert Date    ${date}    %y%d
+    ${accountnumber}    Catenate    SEPARATOR=    Interfact    ${time}
+    Should Be Equal    ${account}    ${accountnumber}

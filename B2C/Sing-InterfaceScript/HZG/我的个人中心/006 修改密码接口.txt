@@ -1,0 +1,18 @@
+*** Settings ***
+Resource          ../../../ActionOperation/HZG/我的.txt
+Library           Collections
+Resource          ../../../DBOperation/B2C/Member/newpassword.txt
+
+*** Keywords ***
+member_updateMemberPwd_post
+    [Arguments]    ${tel}    ${pwd}    ${newpassword}    ${status}
+    &{LoginJson}    登陆接口    ${tel}    ${pwd}
+    Comment    ${LoginJsonData}    Get From Dictionary    ${LoginJson}    data
+    Comment    ${membernoJson}    Get From Dictionary    ${LoginJsonData}    memberno
+    ${membernoJson}    Get From Dictionary    &{LoginJson}[data]    memberno
+    ${updateMemberPwdJson}    修改密码接口    ${membernoJson}    ${newpassword}
+    ${getstatus}    Get From Dictionary    ${updateMemberPwdJson}    status
+    Should Be Equal    ${getstatus}    ${status}
+    @{getnewpassword}    newpassword    ${tel}
+    ${getnewpasswordnew}    Evaluate    @{getnewpassword}[0][0]
+    Should Be Equal    ${getnewpasswordnew}    ${newpassword}

@@ -1,0 +1,9 @@
+*** Settings ***
+Resource          ../../../PublicOperation/PublicKeywords.txt
+
+*** Keywords ***
+LoginToken
+    [Arguments]    ${tel}
+    链接Oracle数据库    ${connect_info}
+    ${LoginSqlToken}    数据库查询    select t.wsctoken from t_hgj_member t where t.tel='${tel}'
+    [Return]    @{LoginSqlToken}

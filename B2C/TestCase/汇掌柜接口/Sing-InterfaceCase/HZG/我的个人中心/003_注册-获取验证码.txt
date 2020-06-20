@@ -1,0 +1,8 @@
+*** Settings ***
+Resource          ../../../../../Sing-InterfaceScript/HZG/我的个人中心/003注册获取验证码.txt
+Resource          ../../../../../PublicOperation/System.txt
+
+*** Test Cases ***
+注册-获取验证码
+    [Template]    getcode
+    ${HZGAccount}    ${checkcode}    1    ${msg}

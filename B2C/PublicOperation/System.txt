@@ -1,0 +1,10 @@
+*** Variables ***
+${HZG-url}        http://test-docker-wscapp.htd.cn    # http://prephl.htd.cn
+${HZG-alias}      prephl    # prephl
+${connect_info}    'htd_boss','aaaa','171.16.55.20:1521/htdboss'
+${HZGAccount}     18705147649
+${HZGPwd}         123456
+${msg}            短信发送成功
+${checkcode}      aaaa
+${HZGPrepUrl}     http://prephl.htd.cn
+${HZGPwdNew}      111111

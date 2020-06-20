@@ -1,0 +1,293 @@
+*** Settings ***
+Library           RequestsLibrary
+Resource          ../../PublicOperation/System.txt
+Resource          ../../PublicOperation/Variable.txt
+Library           DateTime
+
+*** Keywords ***
+登陆接口
+    [Arguments]    ${tel}    ${pwd}
+    log    登陆接口
+    Create Session    ${HZG-alias}    ${HZG-url}    headers=&{headers}
+    ${LoginoutPut}    Post Request    ${HZG-alias}    /member/memberLogin.htm    data=param={"openid":"","subscribe":"","orgid":"","memberSource":"","agentNo":"","taskNo":"","tel":"${tel}","password":"${pwd}"}&platform=wap    headers=&{headers}
+    log    ${LoginoutPut.content}
+    ${LoginJson}    To Json    ${LoginoutPut.content}
+    log    ${LoginJson}
+    [Return]    ${LoginJson}
+
+注册--获取验证码
+    [Arguments]    ${tel}    ${checkCode}
+    log    注册--获取验证码
+    Create Session    ${HZG-alias}    ${HZG-url}    headers=&{headers}
+    ${GetoutPut}    Post Request    ${HZG-alias}    /loginByIdentiCode/sendRegisterCode.htm    data=param={"openid":"","subscribe":"","orgid":"","memberSource":"","agentNo":"","taskNo":"","checkStatus":"1","imei":"5568","tel":"${tel}","checkCode":"${checkCode}","identicode":""}&platform=wap    headers=&{headers}
+    log    ${GetoutPut}
+    ${GetoutPutJson}    To Json    ${GetoutPut}
+    [Return]    ${GetoutPutJson}
+
+设置密码接口
+    [Arguments]    ${memberno}    ${token}
+    log    设置密码接口
+    ${isSetPassword}    Post Request    ${HZG-alias}    /member/isSetPassword.htm    data=param={"memberno":"${memberno}","userno":"${memberno}","token":"${token}"}&platform=wap    headers=&{headers}
+    LOG    ${isSetPassword}
+    ${isSetPasswordJson}    To Json    ${isSetPassword.content}
+    log    ${isSetPasswordJson}
+    [Return]    ${isSetPasswordJson}
+
+修改密码接口
+    [Arguments]    ${memberno}    ${newPassWord}
+    log    修改密码接口
+    ${updateMemberPwd}    Post Request    ${HZG-alias}    /member/updateMemberPwd.htm    data=param={"memberno":"${memberno}","newPassWord":"${newPassWord}","confirmNewPwd":"${newPassWord}"}&platform=wap    headers=&{headers}
+    log    ${updateMemberPwd}
+    ${updateMemberPwdJson}    To Json    ${updateMemberPwd.content}
+    [Return]    ${updateMemberPwdJson}
+
+用户资料更改接口
+    [Arguments]    ${memberno}    ${token}
+    log    用户资料更改接口
+    ${data}    Get Time
+    ${Birthdate}    Subtract Time From Date    ${data}    10000days    %Y-%m-%d
+    ${time}    Convert Date    ${data}    %y%d
+    ${accountnumber}    Catenate    SEPARATOR=    Interfact    ${time}
+    ${name}    Catenate    SEPARATOR=    测试    ${time}
+    ${address}    Catenate    SEPARATOR=    汇通达    ${time}
+    ${memberDataUpdate}    Post Request    ${HZG-alias}    /member/memberDataUpdate.htm    data=param={"memberno":"${memberno}","buyappliances":"","events":"","shoppintention":"114,115,116,117,118,119,120,121","headpic":"","accountnumber":"${accountnumber}","name":"${name}","birthdate":"${birthdate}","address":"${address}","familycount":"${time}","familymoney":"${time}","shoppintentionCheckbox":"121","userno":"${memberno}","token":"${token}"}&platform=wap    headers=&{headers}
+    log    ${memberDataUpdate}
+    ${memberDataUpdateJson}    to json    ${memberDataUpdate.content}
+    [Return]    ${memberDataUpdateJson}
+
+跳入我的主页面接口
+    [Arguments]    ${memberno}    ${token}
+    log    跳入我的主页面接口
+    Create Session    ${HZG-alias}    ${HZG-url}    headers=&{headers}
+    ${memberMainPage}    Post Request    ${HZG-alias}    /member/memberMainPage.htm    data=param={"memberno":"${memberno}","userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    log    ${memberMainPage}
+    ${memberMainPageJson}    To Json    ${memberMainPage}
+    [Return]    ${memberMainPage}
+
+checkToken效验
+    [Arguments]    ${memberno}    ${token}
+    log    checkToken效验
+    Create Session    ${HZG-alias}    ${HZG-url}    headers=&{headers}
+    ${checkToken}    Post request    ${HZG-alias}    /member/checkToken.htm    data=param={userno:"${memberno}",token:"${token}"}    headers=&{headers}
+    ${checkTokenJson}    To Json    ${checkToken}
+    [Return]    ${checkTokenJson}
+
+查询收藏商品数量
+    [Arguments]    ${memberno}    ${token}
+    log    查询收藏商品数量
+    ${collectCount}    Post Request    ${HZG-alias}    /collect/count.htm    data=param={"memberno":"${memberno}","userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${collectCountJson}    To Json    ${collectCount}
+    [Return]    ${collectCountJson}
+
+查询被赞会员店，及各店被赞数量
+    [Arguments]    ${memberno}    ${token}
+    log    查询被赞会员店，及各店被赞数量
+    ${praiseCount}    Post Request    ${HZG-alias}    /praise/count.htm    data=param={"memberno":"${memberno}","userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${praiseCountJson}    To Json    ${praiseCount}
+    [Return]    ${praiseCountJson}
+
+查询购物车里商品数量
+    [Arguments]    ${memberno}    ${token}
+    log    查询购物车里商品数量
+    ${getNum}    Post Request    ${HZG-alias}    /shoppingcart/getNum.htm    data=param={"userid":"${memberno}","userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${getNumJson}    To Json    ${getNum}
+    [Return]    ${getNumJson}
+
+查询汇金币数量
+    [Arguments]    ${memberno}    ${token}
+    log    查询汇金币数量
+    ${memberGold}    Post request    ${HZG-alias}    /home/queryMemberGold.htm    data=param={"memberno":"${memberno}","userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${memberGoldJson}    To Json    ${memberGold}
+    [Return]    ${memberGoldJson}
+
+查询专属会员店数量
+    [Arguments]    ${memberno}    ${token}
+    log    查询专属会员店数量
+    ${PayAttention2OrgByMemberno}    Post Request    ${HZG-alias}    /basicOragnization/queryPayAttention2OrgByMemberno.htm    data=param={"userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${PayAttention2OrgByMembernoJson}    To Json    ${PayAttention2OrgByMemberno}
+    [Return]    ${PayAttention2OrgByMembernoJson}
+
+订单列表请求成功
+    [Arguments]    ${memberno}    ${token}
+    log    订单列表请求成功
+    ${BuyRecordByMemberList}    Post Request    ${HZG-alias}    /memberBuyRecord/queryBuyRecordByMemberList.htm    data=param={"memberno":"${memberno}","ifmyself":1,"recordstatus":1,"start":1,"end":10,"userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${BuyRecordByMemberListJson}    To Json    ${BuyRecordByMemberList}
+    [Return]    ${BuyRecordByMemberListJson}
+
+订单详情页面接口请求
+    [Arguments]    ${memberno}    ${token}
+    log    订单详情页面接口请求
+    ${CountByStatusVN}    Post Request    ${HZG-alias}    /memberBuyRecord/queryCountByStatusVN.htm    data=param={"memberno":"${memberno}","ifmyself":1,"userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${CountByStatusVNJson}    To Json    ${CountByStatusVN}
+    [Return]    ${CountByStatusVNJson}
+
+我的收藏列表页面请求成功
+    [Arguments]    ${memberno}    ${token}
+    log    我的收藏列表页面请求成功
+    ${queryList}    Post Request    ${HZG-alias}    /collect/queryList.htm    data=param={"memberno":"${memberno}","collecttype":1,"userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${queryListJson}    To Json    ${queryList}
+    [Return]    ${queryListJson}
+
+选中收藏记录，取消成功
+    [Arguments]    ${collectid}    ${memberno}    ${token}
+    log    选中收藏记录，取消成功
+    ${cancle}    Post Request    ${HZG-alias}    /collect/cancle.htm    data=param={"collectid":${collectid},"memberno":"${memberno}","collecttype":1,"userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${cancleJson}    To Json    ${cancle}
+    [Return]    ${cancleJson}
+
+查询当前粉丝专属会员店orgid、会员店名称
+    [Arguments]    ${memberno}    ${token}
+    log    查询当前粉丝专属会员店orgid、会员店名称
+    ${memberOrgid}    Post Request    ${HZG-alias}    /member/queryMemberOrgid.htm    data=param={"memberno":"${memberno}","userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${memberOrgidJson}    To Json    ${memberOrgid}
+    [Return]    ${memberOrgidJson}
+
+查询会员店orgid会员店名称是否有活动是否VIP
+    [Arguments]    ${memberno}    ${token}
+    log    查询会员店orgid会员店名称是否有活动是否VIP
+    ${queryByMebernoList}    Post Request    ${HZG-url}    /basicOragnization/queryByMebernoList.htm    data=param={"memberno":"${memberno}","userno":"${memberno}","token":"${token}","first":1,"last":20}    headers=&{headers}
+    ${queryByMebernoListJson}    To Json    ${queryByMebernoList}
+    [Return]    ${queryByMebernoListJson}
+
+修改专属会员店接口
+    [Arguments]    ${orgid}    ${memberno}    ${token}
+    log    修改专属会员店接口
+    ${updateOrgid}    Post Request    ${HZG-alias}    /member/updateOrgid.htm    data=param={"orgid":${orgid},"memberno":"${memberno}","userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${updateOrgidJson}    To Json    ${updateOrgid}
+    [Return]    ${updateOrgidJson}
+
+更新专属会员店隐藏状态
+    [Arguments]    ${orgid}    ${memberno}    ${token}
+    log    更新专属会员店隐藏状态
+    ${updateOrgidHidden}    Post Request    ${HZG-alias}    /member/updateOrgidHidden.htm    data=param={"orgid":${orgid},"memberno":"${memberno}","oldtypemark":"","userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${updateOrgidHiddenJson}    To Json    ${updateOrgidHidden}
+    [Return]    ${updateOrgidHidden}
+
+查询代理人状态接口
+    [Arguments]    ${orgid}
+    Log    查询代理人状态接口
+    ${queryIndexInfoById}    Post Request    ${HZG-alias}    /basicOragnization/queryIndexInfoById.htm    data=param={"shop_id":${orgid}}    headers=&{headers}
+    ${queryIndexInfoByIdJson}    To Json    ${queryIndexInfoById}
+    [Return]    ${queryIndexInfoById}
+
+查询获取金币总数接口
+    [Arguments]    ${memberno}    ${token}
+    log    查询获取金币总数接口
+    ${queryMemberGold}    Post Request    ${HZG-alias}    /home/queryMemberGold.htm    data=param={"memberno":"${memberno}","userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${queryMemberGoldJson}    To Json    ${queryMemberGold}
+    [Return]    ${queryMemberGoldJson}
+
+查询金币获取列表记录接口
+    [Arguments]    ${memberno}    ${token}
+    log    查询金币获取列表记录接口
+    ${getGoldRecordList}    Post Request    ${HZG-alias}    /goldRecord/getGoldRecordList.htm    data=param={"memberno":"${memberno}","describe":1,"bptype":1,"first":1,"last":10,"userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${getGoldRecordListJson}    To Json    ${getGoldRecordList}
+    [Return]    ${getGoldRecordListJson}
+
+查询优惠券列表数据请求
+    [Arguments]    ${memberNo}    ${token}
+    log    查询优惠券列表数据请求
+    ${queryCouponListVN}    Post Request    ${HZG-alias}    /hgjCoupon/queryCouponListVN.htm    data=param={"memberno":"${memberno}","type":1,"userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${queryCouponListVNJson}    To Json    ${queryCouponListVN}
+    [Return]    ${queryCouponListVNJson}
+
+查询已使用tab页面,数据列表
+    [Arguments]    ${memberno}    ${token}
+    log    查询已使用tab页面,数据列表
+    ${queryCouponListVN}    Post Request    ${HZG-alias}    /hgjCoupon/queryCouponListVN.htm    data=param={"memberno":"${memberno}","type":2,"userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${queryCouponListVNJson}    To Json    ${queryCouponListVN}
+    [Return]    ${queryCouponListVNJson}
+
+查询优惠券详情数据
+    [Arguments]    ${memberno}    ${orgid}    ${token}
+    log    查询优惠券详情数据
+    ${queryCouponDetailVN}    Post Request    ${HZG-alias}    /hgjCoupon/queryCouponDetailVN.htm    data=param={"couponid":"${memberno}","couponsource":"27","orgid":"{orgid}","userno":"${memberno}","token":"${token}"}    headers=&{headers}
+    ${queryCouponDetailVNJson}    To Json    ${queryCouponDetailVN}
+    [Return]    ${queryCouponDetailVNJson}
+
+查询兑奖记录
+    [Arguments]    ${memberno}
+    log    查询兑换记录
+    ${queryWinningRecord}    Post Request    ${HZG-alias}    /promotiongateway-war/lottery/queryWinningRecord.html    data=param={memberNo:${memberno}}    headers=&{headers}
+    ${queryWinningRecordJson}    To Json    ${queryWinningRecord}
+    [Return]    ${queryWinningRecordJson}
+
+调用我的资料信息查询接口
+    [Arguments]    ${memberNo}    ${token}
+    log    调用我的资料信息查询接口
+    ${memberDataQuery}    Post Request    ${HZG-alias}    /member/memberDataQuery.htm    data=param={"memberno":${memberNo},"userno":${memberNo},"token":${token}}    headers=&{headers}
+    ${memberDataQueryJson}    To Json    ${memberDataQuery}
+    [Return]    ${memberDataQueryJson}
+
+调用我的收货地址查询接口
+    [Arguments]    ${memberNo}    ${token}
+    log    调用我的收货地址查询接口
+    ${memberAddressQuery}    Post Request    ${HZG-alias}    /memberAddressApp/memberAddressQuery.htm    data=param={"memberno":"${memberNo}","type":0,"userno":"${memberNo}","token":"${token}"}    headers=&{headers}
+    ${memberAddressQueryJson}    To Json    ${memberAddressQuery}
+    [Return]    ${memberAddressQueryJson}
+
+新增我的收货地址接口
+    [Arguments]    ${memberno}    ${tel}    ${token}
+    log    新增我的收货地址接口
+    ${date}    Get Time
+    ${timeone}    Convert Date    ${date}    %y%d
+    ${name}    Catenate    SEPARATOR=    测试收货人    ${timeone}
+    ${address}    Catenate    SEPARATOR=    测试收货地址    ${timeone}
+    ${memberAddressAdd}    Post Request    ${HZG-alias}    /memberAddressApp/memberAddressAdd.htm    data=param={"addressid":"","memberno":"${memberno}","friendno":"${memberno}","zipcode":" ","type":"0","flag":"0","name":"${name}","tel":"${tel}","provinceid":"32","cityid":"01","areaid":"02","address":"${address}","userno":"${memberno}","token":"${token}"}&platform=wap    headers=&{headers}
+    ${memberAddressAddJson}    To Json    ${memberAddressAdd}
+
+请求我的收货地址详情接口
+    [Arguments]    ${memberNo}    ${addressid}    ${token}
+    log    请求我的收货地址详情接口
+    ${memberAddressDetail}    Post Request    ${HZG-alias}    /memberAddressApp/memberAddressDetail.htm    data=param={"memberno":${memberNo},"addressid":${addressid},"userno":${memberNo},"token":${token}}    headers=&{headerd}
+    ${memberAddressDetailJson}    To Json    ${memberAddressDetail}
+    [Return]    ${memberAddressDetailJson}
+
+请求我的收货修改接口
+    [Arguments]    ${addressid}    ${memberNo}    ${tel}    ${token}
+    log    请求我的收货修改接口
+    ${updateMemberAddress}    Post Request    ${HZG-alias}    /memberAddressApp/updateMemberAddress.htm    data=param={"addressid":"${addressid}","memberno":"${memberNo}","friendno":"${memberNo}","zipcode":" ","type":"0","flag":"0","name":"Lucy","tel":"${tel}","provinceid":"32","cityid":"3201","areaid":"320102","address":"地铁2号线钟灵街地铁站","userno":"${memberNo}","token":"${token}"}    headers=&{headers}
+    ${updateMemberAddressJson}    To Json    ${updateMemberAddress}
+    [Return]    ${updateMemberAddressJson}
+
+调用团购订单列表查询接口
+    [Arguments]    ${memberNo}
+    log    调用团购订单列表查询接口
+    ${myGroupBuyList}    Post Request    ${HZG-alias}    /groupBuying/myGroupBuyList.htm    data=param={"buyerCode":"${memberNo}","page":1,"rows":10,"activeState":1}    headers=&{headers}
+    ${myGroupBuyListJson}    To Json    ${myGroupBuyList}
+    [Return]    ${myGroupBuyListJson}
+
+附近的会员店及最新上架商品查询
+    [Arguments]    ${left}    ${right}
+    log    附近的会员店及最新上架商品查询
+    ${findNearShelvesList}    Post Request    ${HZG-alias}    /basicOragnization/findNearShelvesList.htm    data=param={"first":1,"last":10,"user_lng":${left},"user_lat":${right}}    headers=&{headers}
+    ${findNearShelvesListJson}    To Json    ${findNearShelvesList}
+    [Return]    ${findNearShelvesListJson}
+
+查看我的推荐记录接口
+    [Arguments]    ${memberNo}    ${token}
+    log    查看我的推荐记录接口
+    ${queryRecommendList}    Post Request    ${HZG-alias}    /member/queryRecommendList.htm    data=param={"memberno":"${memberNo}","userno":"${memberNo}","token":"${token}"}    headers=&{headers}
+    ${queryRecommendListJson}    To Json    ${queryRecommendList}
+    [Return]    ${queryRecommendListJson}
+
+调用查看我的留言接口
+    [Arguments]    ${memberNo}    ${memberNo}
+    log    调用查看我的留言接口
+    ${queryMessageAll}    Post Request    ${HZG-alias}    /memberMessage/queryMessageAll.htm    data=param={"memberno":"${memberNo}","first":0,"last":10,"userno":"${memberNo}","token":"${token}"}    headers=&{headers}
+    ${queryMessageAllJson}    To Json    ${queryMessageAll}
+    [Return]    ${queryMessageAllJson}
+
+调用商品查询接口
+    [Arguments]    ${memberNo}    ${token}
+    log    调用商品查询接口
+    ${querySpPraiseList}    Post Request    ${HZG-alias}    /praise/querySpPraiseList.htm    data=param={"userno":"${memberNo}","token":"${token}"}    headers=&{headers}
+    ${querySpPraiseListJson}    To Json    ${querySpPraiseList}
+    [Return]    ${querySpPraiseListJson}
+
+调用点赞接口
+    [Arguments]    ${memberNo}    ${token}
+    log    调用点赞接口
+    ${cancle}    Post Request    ${HZG-alias}    /praise/cancle.htm    data=param={"praiseid":${praiseid},"memberno":"${memberNo}","praisetype":1,"userno":"${memberNo}","token":"${token}"}    headers=&{headers}
+    ${cancleJson}    To Json    ${cancle}
+    [Return]    ${cancleJson}

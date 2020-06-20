@@ -1,0 +1,13 @@
+*** Settings ***
+Resource          ../../../ActionOperation/HZG/我的.txt
+Library           Collections
+
+*** Keywords ***
+getcode
+    [Arguments]    ${tel}    ${checkCode}    ${status}    ${msg}
+    ${GetoutPutJson}    注册--获取验证码    ${tel}    ${checkCode}
+    ${GetCodeStatus}    Get From Dictionary    ${GetoutPutJson}    status
+    ${GetCodedata}    Get From Dictionary    ${GetoutPutJson}    data
+    ${GetCodeMsg}    Get From Dictionary    ${GetoutPutJson}    msg
+    Should Be Equal    ${GetCodeStatus}    ${status}
+    Should Be Equal    ${GetCodeMsg}    ${msg}

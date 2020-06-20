@@ -1,0 +1,16 @@
+*** Settings ***
+Library           DatabaseLibrary
+Library           RequestsLibrary
+Library           Collections
+Resource          System.txt
+Resource          Variable.txt
+
+*** Keywords ***
+链接Oracle数据库
+    [Arguments]    ${connect_info}
+    Connect To Database Using Custom Params    cx_Oracle    ${connect_info}
+
+数据库查询
+    [Arguments]    ${select_info}
+    ${field}    Query    ${select_info}
+    [Return]    ${field}

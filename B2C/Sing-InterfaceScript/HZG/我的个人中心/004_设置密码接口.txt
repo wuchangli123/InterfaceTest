@@ -1,0 +1,15 @@
+*** Settings ***
+Resource          ../../../ActionOperation/HZG/我的.txt
+Library           Collections
+
+*** Keywords ***
+member_SetPassword_post
+    [Arguments]    ${tel}    ${pwd}    ${status}    ${set}
+    &{LoginJson}    登陆接口    ${tel}    ${pwd}
+    ${memberno}    Get From Dictionary    &{LoginJson}[data]    memberno
+    ${token}    Get From Dictionary    &{LoginJson}[data]    token
+    ${isSetPasswordJson}    设置密码接口    ${memberno}    ${token}
+    ${getStatus}    Get From Dictionary    ${isSetPasswordJson}    status
+    ${getIsset}    Get From Dictionary    &{isSetPasswordJson}[data]    isset
+    Should Be Equal    ${getStatus}    ${status}
+    Should Be Equal    ${getIsset}    ${set}

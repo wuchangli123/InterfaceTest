@@ -1,0 +1,9 @@
+*** Settings ***
+Resource          ../../../../../Sing-InterfaceScript/HZG/我的个人中心/修改密码接口.txt
+Resource          ../../../../../PublicOperation/System.txt
+Resource          ../../../../../PublicOperation/Variable.txt
+
+*** Test Cases ***
+修改密码
+    [Template]    member_updateMemberPwd_post
+    ${HZGAccount}    ${HZGPwd}    ${HZGPwdNew}    1

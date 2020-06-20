@@ -1,0 +1,8 @@
+*** Settings ***
+Resource          ../../../../../PublicOperation/System.txt
+Resource          ../../../../../Sing-InterfaceScript/HZG/我的个人中心/005修改用户资料接口.txt
+
+*** Test Cases ***
+修改用户资料
+    [Template]    member_memberDataUpdate_post
+    ${HZGAccount}    ${HZGPwd}    1

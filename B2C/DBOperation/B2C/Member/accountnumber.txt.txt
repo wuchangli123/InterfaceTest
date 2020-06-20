@@ -1,0 +1,10 @@
+*** Settings ***
+Resource          ../../../PublicOperation/PublicKeywords.txt
+Resource          ../../../PublicOperation/System.txt
+
+*** Keywords ***
+查询会员账户
+    [Arguments]    ${tel}
+    链接Oracle数据库    ${connect_info}
+    @{accountnumber}    数据库查询    select accountnumber from T_HGJ_MEMBER WHERE TEL='${tel}'
+    [Return]    @{accountnumber}

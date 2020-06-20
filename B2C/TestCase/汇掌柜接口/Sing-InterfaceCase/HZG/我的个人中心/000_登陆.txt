@@ -1,0 +1,8 @@
+*** Settings ***
+Resource          ../../../../../Sing-InterfaceScript/HZG/我的个人中心/000_登陆接口1.txt
+
+*** Test Cases ***
+登陆接口
+    [Tags]    一级    基础类     [Template]    memberLogin_post
+   个人中心
+    ${HZGAccount}    ${HZGPwd}

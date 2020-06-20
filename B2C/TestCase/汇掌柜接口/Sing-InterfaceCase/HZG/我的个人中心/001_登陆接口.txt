@@ -1,0 +1,15 @@
+*** Settings ***
+Library           requests
+Library           RequestsLibrary
+Library           Collections
+Resource          ../../../../../PublicOperation/System.txt
+Resource          ../../../../../PublicOperation/Variable.txt
+Resource          ../../../../../Sing-InterfaceScript/HZG/我的个人中心/001_登陆.txt
+
+*** Test Cases ***
+会员密码登陆
+    [Tags]    一级    基础类    个人中心    ${EMPTY}    2    3
+    ...    3
+    [Template]    会员密码登陆场景
+    ${HZGAccount}    ${HZGPwd}    1
+    [Teardown]

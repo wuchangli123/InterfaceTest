@@ -1,0 +1,25 @@
+*** Settings ***
+Resource          ../../../PublicOperation/System.txt
+Resource          ../../../PublicOperation/Variable.txt
+Resource          ../../../PublicOperation/PublicKeywords.txt
+Resource          ../../../DBOperation/B2C/Member/memno.txt
+
+*** Keywords ***
+会员密码登陆场景
+    [Arguments]    ${tel}    ${pwd}    ${status}
+    log    粉丝密码登陆
+    Create Session    ${HZG-alias}    ${HZG-url}    headers=&{headers}
+    ${loginOutput}    Post Request    ${HZG-alias}    /member/memberLogin.htm    data=param={"openid":"","subscribe":"","orgid":"","memberSource":"","agentNo":"","taskNo":"","tel":"${tel}","password":"${pwd}"}&platform=wap    headers=&{headers}
+    Should Be Equal As Strings    ${loginOutput.status_code}    200
+    log    ${loginOutput.json()}
+    ${loginJson}    To Json    ${loginOutput.content}
+    log    ${loginJson}
+    ${loginStatus}    Get From Dictionary    ${loginJson}    status
+    ${loginmsg}    Get From Dictionary    ${loginJson}    msg
+    ${logindata}    Get From Dictionary    ${loginJson}    data
+    ${memberCode}    Get From Dictionary    ${logindata}    memberno
+    log    ${memberCode}
+    Should Be Equal    ${loginStatus}    ${status}
+    @{memno}    查询会员编号    ${tel}
+    ${no}    Evaluate    @{memno}[0][0]
+    Should Be Equal    '${memberCode}'    '${no}'

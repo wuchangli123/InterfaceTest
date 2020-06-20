@@ -1,0 +1,10 @@
+*** Settings ***
+Resource          ../../../../../ActionOperation/HZG/我的.txt
+
+*** Test Cases ***
+登陆
+    [Template]    登陆接口
+    18705147649    1
+
+新增收货地址调试
+    [Template]    新增我的收货地址接口

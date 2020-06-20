@@ -1,0 +1,7 @@
+*** Settings ***
+Resource          ../../../../../Sing-InterfaceScript/HZG/我的个人中心/004_设置密码接口.txt
+
+*** Test Cases ***
+成功进入设置页面
+    [Template]    member_SetPassword_post
+    ${HZGAccount}    ${HZGPwd}    1    1

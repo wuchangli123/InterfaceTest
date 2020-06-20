@@ -1,0 +1,21 @@
+*** Settings ***
+Resource          ../../../ActionOperation/HZG/我的.txt
+Library           Collections
+Resource          ../../../PublicOperation/PublicKeywords.txt
+Resource          ../../../DBOperation/B2C/Member/token.txt
+
+*** Keywords ***
+memberLogin_post
+    [Arguments]    ${tel}    ${pwd}    ${status}
+    ${LoginJson}    登陆接口    ${tel}    ${pwd}
+    ${loginStatus}    Get From Dictionary    ${LoginJson}    status
+    ${loginData}    Get From Dictionary    ${LoginJson}    data
+    ${loginShop_id}    Get From Dictionary    ${loginData}    shop_id
+    ${loginMemberno}    Get From Dictionary    ${loginData}    memberno
+    ${loginToken}    Get From Dictionary    ${loginData}    token
+    ${loginMsg}    Get From Dictionary    ${LoginJson}    msg
+    Should Be Equal    ${loginStatus}    ${status}
+    @{LoginSqlToken}    loginToken    ${tel}
+    log    @{LoginSqlToken}
+    ${token}    Evaluate    @{LoginSqlToken}[0][0]
+    Should Be Equal    ${loginToken}    ${token}
